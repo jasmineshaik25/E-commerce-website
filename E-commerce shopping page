@@ -1,0 +1,138 @@
+class Product:
+    def __init__(self, product_id, name, category, price):
+        self.product_id = product_id
+        self.name = name
+        self.category = category
+        self.price = price
+
+class ShoppingCart:
+    def __init__(self):
+        self.items = {}  # Dictionary to store cart items (product_id: quantity)
+
+    def add_item(self, product, quantity):
+        if product.product_id in self.items:
+            self.items[product.product_id] += quantity
+        else:
+            self.items[product.product_id] = quantity
+
+    def remove_item(self, product, quantity):
+        if product.product_id in self.items:
+            self.items[product.product_id] -= quantity
+            if self.items[product.product_id] <= 0:
+                del self.items[product.product_id]
+
+    def view_cart(self, catalog):
+        total_price = 0
+        for product_id, quantity in self.items.items():
+            product = catalog[product_id]
+            total_price += product.price * quantity
+            print(f"{product.name} ({product.category}): {quantity} x Rs. {product.price} each")
+
+        print(f"Total Price: Rs. {total_price}")
+
+class Admin:
+    def __init__(self):
+        self.products = {}  # Dictionary to store products (product_id: Product object)
+
+    def add_product(self, product):
+        self.products[product.product_id] = product
+
+    def remove_product(self, product_id):
+        if product_id in self.products:
+            del self.products[product_id]
+
+def main():
+    # Create an admin with some sample products
+    admin = Admin()
+    admin.add_product(Product(1, 'Boots', 'Footwear', 50.0))
+    admin.add_product(Product(2, 'Coats', 'Clothing', 100.0))
+
+    # Create a sample product catalog
+    catalog = {}
+    
+    # Create a user's shopping cart
+    cart = ShoppingCart()
+
+    print("Welcome to the Demo Marketplace")
+
+    while True:
+        print("\nMenu:")
+        print("1. View Catalog")
+        print("2. Add to Cart")
+        print("3. Remove from Cart")
+        print("4. View Cart")
+        print("5. Checkout")
+        print("6. Admin Login")
+        print("7. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            print("\nProduct Catalog:")
+            for product_id, product in admin.products.items():
+                print(f"{product_id}: {product.name} ({product.category}) - Rs. {product.price}")
+
+        elif choice == '2':
+            product_id = int(input("Enter the Product ID to add: "))
+            quantity = int(input("Enter the quantity: "))
+            if product_id in admin.products:
+                cart.add_item(admin.products[product_id], quantity)
+                print("Item added to cart.")
+
+        elif choice == '3':
+            product_id = int(input("Enter the Product ID to remove: "))
+            quantity = int(input("Enter the quantity: "))
+            if product_id in admin.products:
+                cart.remove_item(admin.products[product_id], quantity)
+                print("Item removed from cart.")
+
+        elif choice == '4':
+            cart.view_cart(admin.products)
+
+        elif choice == '5':
+            print("Checkout")
+            cart.view_cart(admin.products)
+            print("Payment options: UPI, Debit Card, PayPal, etc.")
+            # Implement payment processing logic here
+            print("Your order is successfully placed.")
+
+        elif choice == '6':
+            # Admin login (you can implement a simple username/password check here)
+            admin_password = input("Enter admin password: ")
+            if admin_password == "admin123":
+                while True:
+                    print("\nAdmin Menu:")
+                    print("1. Add Product")
+                    print("2. Remove Product")
+                    print("3. Exit Admin Menu")
+
+                    admin_choice = input("Enter admin choice: ")
+
+                    if admin_choice == '1':
+                        product_id = int(input("Enter Product ID: "))
+                        name = input("Enter Product Name: ")
+                        category = input("Enter Product Category: ")
+                        price = float(input("Enter Product Price: "))
+                        new_product = Product(product_id, name, category, price)
+                        admin.add_product(new_product)
+                        print("Product added successfully.")
+
+                    elif admin_choice == '2':
+                        product_id = int(input("Enter Product ID to remove: "))
+                        admin.remove_product(product_id)
+                        print("Product removed successfully.")
+
+                    elif admin_choice == '3':
+                        break
+                    else:
+                        print("Invalid choice in Admin Menu.")
+
+            else:
+                print("Invalid admin password!")
+
+        elif choice == '7':
+            print("Thank you for shopping with us!")
+            break
+
+if __name__ == "__main__":
+    main()
